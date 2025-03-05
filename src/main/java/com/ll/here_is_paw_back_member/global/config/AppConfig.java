@@ -15,7 +15,7 @@ public class AppConfig {
         AppConfig.siteFrontUrl = siteFrontUrl;
     }
 
-    @Value("${custom.site.frontUrl}")
+    @Value("${custom.site.backUrl}")
     public void setSiteBackUrl(String siteFrontUrl) {
         AppConfig.siteBackUrl = siteBackUrl;
     }
