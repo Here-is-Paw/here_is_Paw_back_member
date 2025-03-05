@@ -1,0 +1,15 @@
+server:
+  port: 8091
+spring:
+  output:
+    ansi:
+      enabled: ALWAYS
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false # OSIV 설정 끄기
