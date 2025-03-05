@@ -5,7 +5,7 @@ spring:
     ansi:
       enabled: ALWAYS
   profiles:
-    active: dev
+    active: prod
     include: secret
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -55,7 +55,7 @@ springdoc:
 logging:
   level:
     root: info
-    com.ll.hereispaw : debug, warn
+    com.ll.hereispaw : debug
 management:
   endpoints:
     web:
@@ -67,7 +67,7 @@ management:
 custom:
   dev:
     cookieDomain: localhost
-    frontUrl: "http://${custom.dev.cookieDomain}:5173"
+    frontUrl: "http://${custom.dev.cookieDomain}:513373"
     backUrl: "http://${custom.dev.cookieDomain}:${server.port}"
   prod:
     cookieDomain: pawpaw.kknaks.site
@@ -75,6 +75,6 @@ custom:
     backUrl: "https://api.${custom.prod.cookieDomain}"
   site:
     name: "PawPaw"
-    cookieDomain: "${custom.prod.cookieDomain}"
-    frontUrl: "${custom.prod.frontUrl}"
-    backUrl: "${custom.prod.backUrl}"
+    cookieDomain: "${custom.dev.cookieDomain}"
+    frontUrl: "${custom.dev.frontUrl}"
+    backUrl: "${custom.dev.backUrl}"
