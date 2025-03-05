@@ -28,7 +28,8 @@ public class SecurityConfig {
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
     configuration.setAllowedOrigins(Arrays.asList(
-        "http://localhost:5173", "http://host.docker.internal:8001"));
+        "http://localhost:5173",
+        "43.203.126.129:8001"));
     configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
     configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept"));
     configuration.setAllowCredentials(true);
