@@ -56,4 +56,11 @@ logging:
   level:
     root: info
     com.ll.hereispaw : debug, warn
-
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
