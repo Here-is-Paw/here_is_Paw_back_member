@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +31,16 @@ public class ApiV1MemberController {
 
     private final MemberService memberService;
     private final Rq rq;
+
+    @GetMapping("/{memberId}")
+    public MemberInfoDto getMember(@PathVariable Long memberId) {
+        log.debug("memberId : {}", memberId);
+        Member member = memberService.findById(memberId).get();
+        MemberInfoDto memberInfoDto = new MemberInfoDto(member);
+        log.debug("member : {}", member);
+        return memberInfoDto;
+    }
+
 
     // 유저 기본 정보 가져오기
     @GetMapping("/me")

@@ -15,6 +15,9 @@ logging:
     com.ll.hereispaw : debug
 services:
   auth:
-    url: http://localhost:8090  # 인증 서비스 URL
+    url: http://localhost:8090 # 인증 서비스 URL
+  #    url: http://localhost:8091  # 인증 서비스 URL
   noti:
-    url: http://localhost:8091  # 인증 서비스 URL
+    url: http://localhost:8097  # 인증 서비스 URL
+  post:
+    url: http://localhost:8093  # 인증 서비스 URL
