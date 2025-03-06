@@ -1,5 +1,5 @@
 server:
-  port: 8091
+  port: 8090
 spring:
   output:
     ansi:
@@ -13,7 +13,11 @@ spring:
       hibernate:
         format_sql: true
     open-in-view: false # OSIV 설정 끄기
-
+services:
+  auth:
+    url: http://43.203.126.129:8090  # 인증 서비스 URL
+  noti:
+    url: http://43.203.126.129:8097  # 인증 서비스 URL
 custom:
   dev:
     cookieDomain: localhost
