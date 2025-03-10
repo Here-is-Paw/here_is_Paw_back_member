@@ -13,14 +13,6 @@ spring:
       hibernate:
         format_sql: true
     open-in-view: false # OSIV 설정 끄기
-services:
-  auth:
-    url: http://110.165.16.61:8090  # 인증 서비스 URL
-  #    url: http://localhost:8091  # 인증 서비스 URL
-  noti:
-    url: http://110.165.16.61:8097  # 인증 서비스 URL
-  post:
-    url: http://110.165.16.61:8093  # 인증 서비스 URL
 custom:
   dev:
     cookieDomain: localhost
@@ -35,3 +27,14 @@ custom:
     cookieDomain: "${custom.prod.cookieDomain}"
     frontUrl: "${custom.prod.frontUrl}"
     backUrl: "${custom.prod.backUrl}"
+services:
+  auth:
+    url: http://110.165.16.61:8090  # 인증 서비스 URL
+  post:
+    url: http://110.165.16.61:8093  # 게시글 서비스 URL
+  chat:
+    url: http://110.165.16.61:8095  # 채팅 서비스 URL
+  noti:
+    url: http://110.165.16.61:8097  # 알림 서비스 URL
+  payment:
+    url: http://110.165.16.61:8099 # 결제 서비스 URL
