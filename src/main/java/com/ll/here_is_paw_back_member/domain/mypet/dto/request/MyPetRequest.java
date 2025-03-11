@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.services.s3.endpoints.internal.Value;
 
 @Getter @Setter
 public class MyPetRequest {
@@ -25,7 +26,10 @@ public class MyPetRequest {
     @Min(value = 0, message = "성별은 0, 1, 2 중 하나여야 합니다.")
     @Max(value = 2, message = "성별은 0, 1, 2 중 하나여야 합니다.")
     private Integer gender;
-    private boolean neutered;
+
+    @Min(value = 0, message = "중성화여부는 0, 1, 2 중 하나여야 합니다.")
+    @Max(value = 2, message = "중성화여부는 0, 1, 2 중 하나여야 합니다.")
+    private Integer neutered;
     private Integer age;
     private String etc;
 

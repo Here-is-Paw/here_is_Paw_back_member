@@ -67,10 +67,10 @@ public class MyPetService {
                     .color(myPetRequest.getColor())
                     .serialNumber(myPetRequest.getSerialNumber())
                     .gender(myPetRequest.getGender() != null ? myPetRequest.getGender() : 0)
-                    .neutered(myPetRequest.isNeutered())
+                    .neutered(myPetRequest.getNeutered())
                     .age(myPetRequest.getAge() != null ? myPetRequest.getAge() : 0)
                     .etc(myPetRequest.getEtc())
-                    .imageUrl(imageUrl)
+                    .pathUrl(imageUrl)
                     .build();
 
             myPetRepository.save(myPet);
@@ -106,9 +106,9 @@ public class MyPetService {
 
             // 파일 존재 확인 및 기존 이미지 S3 삭제 > 새 이미지 등록
             if (myPetRequest.hasImageFile()) {
-                deleteImageToS3(myPet.getImageUrl());
+                deleteImageToS3(myPet.getPathUrl());
                 String imageUrl = uploadImageToS3(myPetRequest.getImageFile());
-                myPet.setImageUrl(imageUrl);
+                myPet.setPathUrl(imageUrl);
             }
 
             myPet.setName(myPetRequest.getName());
@@ -126,7 +126,7 @@ public class MyPetService {
                 myPet.setGender(myPetRequest.getGender());
             }
 
-            myPet.setNeutered(myPetRequest.isNeutered());
+            myPet.setNeutered(myPetRequest.getNeutered());
 
             if (myPetRequest.hasAge()) {
                 myPet.setAge(myPetRequest.getAge());
@@ -152,7 +152,7 @@ public class MyPetService {
             throw new CustomException(ErrorCode.SC_FORBIDDEN);
         }
 
-        String imageUrl = myPet.getImageUrl();
+        String imageUrl = myPet.getPathUrl();
         if (imageUrl != null) {
             deleteImageToS3(imageUrl);
         }

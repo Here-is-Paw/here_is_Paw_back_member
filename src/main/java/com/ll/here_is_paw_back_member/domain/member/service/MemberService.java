@@ -8,19 +8,24 @@ import com.ll.here_is_paw_back_member.domain.member.dto.response.LoginResponse;
 import com.ll.here_is_paw_back_member.domain.member.dto.response.MemberInfoDto;
 import com.ll.here_is_paw_back_member.domain.member.entity.Member;
 import com.ll.here_is_paw_back_member.domain.member.repository.MemberRepository;
+import com.ll.here_is_paw_back_member.global.enums.PostMethode;
 import com.ll.here_is_paw_back_member.global.error.ErrorCode;
 import com.ll.here_is_paw_back_member.global.exception.CustomException;
+import com.ll.here_is_paw_back_member.global.kafka.dto.CreateMemberEventDto;
 import com.ll.here_is_paw_back_member.global.rq.Rq;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.constraints.NotBlank;
+
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +48,8 @@ public class MemberService {
 
     @Value("${custom.bucket.avatar}")
     private String dirName;
+
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     private final S3Client s3Client;
 
@@ -72,16 +79,19 @@ public class MemberService {
                 .ifPresent(user -> {
                     throw new ServiceException("해당 username은 이미 사용중입니다.");
                 });
-
-        Member member = Member.builder()
+        
+        Member member = memberRepository.save(Member.builder()
                 .username(username)
                 .password(password)
                 .nickname(nickname)
                 .avatar(avatar)
                 .apiKey(UUID.randomUUID().toString())
-                .build();
+                .build());
 
-        return memberRepository.save(member);
+        // 카프카 자리
+        kafkaTemplate.send("members", new CreateMemberEventDto(member, PostMethode.CREATE.getCode()));
+
+        return member;
     }
 
     @Transactional
@@ -94,15 +104,17 @@ public class MemberService {
                     throw new ServiceException("해당 username은 이미 사용중입니다.");
                 });
 
-        Member member = Member.builder()
+        Member member = memberRepository.save(Member.builder()
                 .username(username)
                 .password(passwordEncoder.encode(signupRq.password()))
                 .nickname(signupRq.nickname())
                 .apiKey(UUID.randomUUID().toString())
                 .avatar(defaultAvatar)
-                .build();
+                .build());
 
-        return memberRepository.save(member);
+        kafkaTemplate.send("members", new CreateMemberEventDto(member, PostMethode.CREATE.getCode()));
+
+        return member;
     }
 
     public Optional<Member> findByUsername(String username) {
@@ -139,16 +151,16 @@ public class MemberService {
         return member;
     }
 
-    @Transactional
-    public void modify(Member member, @NotBlank String nickname, String avatar) {
-        member.setNickname(nickname);
-        member.setAvatar(avatar);
-    }
+//    @Transactional
+//    public void modify(Member member, @NotBlank String nickname, String avatar) {
+//        member.setNickname(nickname);
+//        member.setAvatar(avatar);
+//    }
 
     @Transactional
     public MemberInfoDto modify(Member loginUser, ModifyRequest modifyRequest) {
-        Member member = memberRepository.findByUsername(modifyRequest.username()).orElseThrow(() -> new CustomException(
-            ErrorCode.NOT_FOUND_USER));
+        Member member = memberRepository.findById(modifyRequest.id()).orElseThrow(() -> new CustomException(
+                ErrorCode.NOT_FOUND_USER));
 
         if (!loginUser.getUsername().equals(member.getUsername())) {
             throw new CustomException(ErrorCode.SC_FORBIDDEN);
@@ -161,7 +173,6 @@ public class MemberService {
         if (modifyRequest.hasProfile()) {
             String avatar = member.getAvatar();
 
-
             // S3 삭제
             if (avatar != null && !avatar.equals(defaultAvatar)) {
                 deleteImageToS3(member.getAvatar());
@@ -173,18 +184,15 @@ public class MemberService {
 
         memberRepository.save(member);
 
+        kafkaTemplate.send("members", new CreateMemberEventDto(member, PostMethode.PATH.getCode()));
+
         return new MemberInfoDto(member);
     }
 
     @Transactional
     public Member modifyOrJoin(String username, String nickname, String avatar) {
         Optional<Member> opMember = findByUsername(username);
-        if (opMember.isPresent()) {
-            Member member = opMember.get();
-            modify(member, nickname, avatar);
-            return member;
-        }
-        return signup(username, "", nickname, avatar);
+        return opMember.orElseGet(() -> signup(username, "", nickname, avatar));
     }
 
     @Transactional
@@ -200,8 +208,9 @@ public class MemberService {
         return new LoginResponse(new MemberInfoDto(member), member.getApiKey(), token);
     }
 
+    // 반경
     @Transactional
-    public void radius_update(Member loginUser, Double radius) {
+    public void radius(Member loginUser, Double radius) {
         Member user = memberRepository.findById(loginUser.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
 
@@ -210,6 +219,7 @@ public class MemberService {
         memberRepository.save(user);
     }
 
+    // S3 코드
     private String uploadImageToS3(MultipartFile file) {
         try {
             String filename = getUuidFilename(file);
@@ -223,7 +233,7 @@ public class MemberService {
                     RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
 
             return getS3FileUrl(filename);
-        }catch (IOException e) {
+        } catch (IOException e) {
             throw new CustomException(ErrorCode.S3_UPLOAD_ERROR);
         }
     }

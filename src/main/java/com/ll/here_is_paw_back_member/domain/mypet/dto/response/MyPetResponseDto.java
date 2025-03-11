@@ -15,12 +15,12 @@ public class MyPetResponseDto {
     private String breed;
 
 //    @Column(nullable = false)
-    private String imageUrl;
+    private String pathUrl;
 
     private String color;
     private String serialNumber;
     private int gender;
-    private boolean neutered;
+    private int neutered;
     private int age;
     private String etc;
 
@@ -32,10 +32,10 @@ public class MyPetResponseDto {
         dto.setColor(myPet.getColor());
         dto.setSerialNumber(myPet.getSerialNumber());
         dto.setGender(myPet.getGender());
-        dto.setNeutered(myPet.isNeutered());
+        dto.setNeutered(myPet.getNeutered());
         dto.setAge(myPet.getAge());
         dto.setEtc(myPet.getEtc());
-        dto.setImageUrl(myPet.getImageUrl());
+        dto.setPathUrl(myPet.getPathUrl());
         return dto;
     }
 

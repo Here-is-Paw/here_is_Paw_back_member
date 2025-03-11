@@ -10,6 +10,7 @@
  import org.springframework.context.annotation.Configuration;
  import org.springframework.context.annotation.Profile;
  import org.springframework.core.annotation.Order;
+ import org.springframework.security.crypto.password.PasswordEncoder;
  import org.springframework.transaction.annotation.Transactional;
 
  @Profile("!prod")
@@ -18,6 +19,7 @@
  @Slf4j
  public class InitData {
      private final MemberService memberService;
+     private final PasswordEncoder passwordEncoder;
 
      @Bean
      @Order(3)
@@ -28,9 +30,9 @@
              @Override
              public void run (ApplicationArguments args) {
                  if (memberService.count() > 0)  return;
-                 Member member1 = memberService.signup("user1", "1234", "유저1", "");
-                 Member member2 =memberService.signup("user2", "1234", "유저2", "");
-                 Member member3 =memberService.signup("user3", "1234", "유저3", "");
+                 Member member1 = memberService.signup("user1", passwordEncoder.encode("1234"), "유저1", "");
+                 Member member2 =memberService.signup("user2", passwordEncoder.encode("1234"), "유저2", "");
+                 Member member3 =memberService.signup("user3", passwordEncoder.encode("1234"), "유저3", "");
 //
 //                 Author author1 = missingService.of(member1);
 //                 Author author2 = missingService.of(member2);

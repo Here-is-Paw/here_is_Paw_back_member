@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import software.amazon.awssdk.services.s3.endpoints.internal.Value;
 
 @Entity
 @Setter
@@ -33,17 +34,17 @@ public class MyPet extends BaseEntity {
     @Column(nullable = false)
     private String breed;
 
-    private String imageUrl;
+    private String pathUrl;
 
     private String color;
 
     private String serialNumber;
 
-    private int gender = 0;
+    private Integer gender;
 
-    private boolean neutered;
+    private Integer neutered;
 
-    private int age;
+    private Integer age;
 
     @Column(columnDefinition = "TEXT")
     private String etc;
