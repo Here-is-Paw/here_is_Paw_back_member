@@ -56,7 +56,7 @@ springdoc:
 logging:
   level:
     root: info
-    com.ll.hereispaw : debug
+    com.ll.here_is_paw_back_member : debug
 management:
   endpoints:
     web:

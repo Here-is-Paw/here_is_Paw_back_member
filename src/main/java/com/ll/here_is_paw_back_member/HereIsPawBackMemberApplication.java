@@ -13,11 +13,11 @@ public class HereIsPawBackMemberApplication {
 	public static void main(String[] args) {
 		ConfigurableApplicationContext context = SpringApplication.run(HereIsPawBackMemberApplication.class, args);
 
-		// 스프링 컨텍스트에서 값 가져오기
-		String frontUrl = context.getEnvironment().getProperty("custom.site.frontUrl");
-		String backUrl = context.getEnvironment().getProperty("custom.site.backUrl");
-
-		log.info("siteFrontUrl: {}", frontUrl);
-		log.info("siteBackUrl: {}", backUrl);
+//		// 스프링 컨텍스트에서 값 가져오기
+//		String frontUrl = context.getEnvironment().getProperty("custom.site.frontUrl");
+//		String backUrl = context.getEnvironment().getProperty("custom.site.backUrl");
+//
+//		log.info("siteFrontUrl: {}", frontUrl);
+//		log.info("siteBackUrl: {}", backUrl);
 	}
 }
