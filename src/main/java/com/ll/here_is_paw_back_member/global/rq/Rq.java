@@ -65,8 +65,8 @@ public class Rq {
                 .domain(AppConfig.getSiteBackUrl())
                 .sameSite("Strict")
                 .secure(true)
-//                .httpOnly(true)
-                .httpOnly(false)
+                .httpOnly(true)
+//                .httpOnly(false)
                 .build();
         resp.addHeader("Set-Cookie", cookie.toString());
     }
