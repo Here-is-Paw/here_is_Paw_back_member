@@ -40,9 +40,12 @@ public class ApiV1MemberController {
     private final MemberService memberService;
     private final Rq rq;
 
-    // Member 서비스의 컨트롤러에 추가
+
     @GetMapping("/token/refresh")
-    public ResponseEntity<?> refreshToken(@RequestParam String apiKey) {
+    public ResponseEntity<?> refreshToken(
+        @RequestParam String apiKey,
+        @RequestParam(required = false) String redirectUri) {
+
         Member member = memberService.findByApiKey(apiKey)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid API key"));
 
@@ -59,11 +62,45 @@ public class ApiV1MemberController {
             .secure(true)
             .build();
 
+        // 리다이렉트 URI가 있으면 그 주소로 리다이렉트
+        if (redirectUri != null && !redirectUri.isEmpty()) {
+            headers.set(HttpHeaders.LOCATION, redirectUri);
+            return ResponseEntity.status(HttpStatus.SEE_OTHER)
+                .headers(headers)
+                .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
+                .build();
+        }
+
+        // 리다이렉트 URI가 없으면 일반 응답 반환
         return ResponseEntity.ok()
             .headers(headers)
             .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
             .body(Map.of("accessToken", newAccessToken));
     }
+//    // Member 서비스의 컨트롤러에 추가
+//    @GetMapping("/token/refresh")
+//    public ResponseEntity<?> refreshToken(@RequestParam String apiKey) {
+//        Member member = memberService.findByApiKey(apiKey)
+//            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid API key"));
+//
+//        String newAccessToken = memberService.genAccessToken(member);
+//
+//        // 응답 헤더와 쿠키에 새 토큰 추가
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.add("Authorization", "Bearer " + apiKey + " " + newAccessToken);
+//
+//        ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", newAccessToken)
+//            .path("/")
+//            .maxAge(3600)
+//            .httpOnly(true)
+//            .secure(true)
+//            .build();
+//
+//        return ResponseEntity.ok()
+//            .headers(headers)
+//            .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
+//            .body(Map.of("accessToken", newAccessToken));
+//    }
 
     @GetMapping("/{memberId}")
     public MemberInfoDto getMember(@PathVariable Long memberId) {
